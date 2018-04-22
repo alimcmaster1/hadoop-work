@@ -20,6 +20,7 @@ import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.stream.Stream;
 
 import static org.junit.Assert.assertTrue;
@@ -32,10 +33,10 @@ public class MapReduceTest {
     private Configuration conf;
     private FileSystem fileSystem;
 
-    final String inputFileDir = "tests/input/book/";
-    final String outputDirectory = "tests/output";
+    private final String inputFileDir = "tests/input/book/";
+    private final String outputDirectory = "tests/output";
 
-    Path outputFilePath;
+    private Path outputFilePath;
 
     @Before
     public void setUp() throws IOException {
@@ -52,7 +53,7 @@ public class MapReduceTest {
     public void testMapReduce() throws IOException, ClassNotFoundException, InterruptedException {
 
         final String fileName = "src/test/resources/odyssey_book_one.txt";
-        final ArrayList<String> bookContent = new ArrayList<String>();
+        final ArrayList<String> bookContent = new ArrayList<>();
 
         // Use Java 8 Streams
         Stream<String> stream = Files.lines(Paths.get(fileName));
@@ -87,6 +88,14 @@ public class MapReduceTest {
 
         assertTrue(job.isSuccessful());
 
+        //Load expected output from file
+        HashMap<String, Integer> topTen = new HashMap<>();
+        java.nio.file.Path path = Paths.get("src/test/resources/top_ten.txt");
+        Files.lines(path).forEach(line -> {
+            String[] entry = line.split(" ");
+            topTen.put(entry[0], Integer.valueOf(entry[1]));
+        });
+
         // Now check output is as expected
         FileStatus[] fileStatus = fileSystem.listStatus(outputFilePath);
         for (FileStatus file : fileStatus) {
@@ -97,9 +106,10 @@ public class MapReduceTest {
                         new InputStreamReader(fileSystem.open(filePath)));
 
                 String line;
-
                 while ((line = reader.readLine()) != null) {
-                    System.out.println(line);
+                    String[] entry = line.split("\t");
+                    int freq = topTen.get(entry[0]);
+                    assertTrue(String.format("Check that Freqencies of word: %s match", entry[0]), freq == Integer.valueOf(entry[1]));
                 }
 
             }

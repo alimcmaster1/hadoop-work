@@ -1,0 +1,10 @@
+telemachus 222
+euryclea 30
+penelope 90
+meanwhile 30
+agamemnon 30
+achaeans 53
+phaeacians 27
+antinous 51
+alcinous 50
+menelaus 55

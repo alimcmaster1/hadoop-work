@@ -17,8 +17,8 @@ import java.util.Map.Entry;
  */
 public class Reduce extends Reducer<IntWritable, Text, Text, LongWritable> {
 
-    private HashMap<String, IntWritable> wordFrequencyMap = new HashMap<String, IntWritable>();
-    private HashMap<String, IntWritable> topTenMap = new HashMap<String, IntWritable>();
+    private HashMap<String, IntWritable> wordFrequencyMap = new HashMap<>();
+    private HashMap<String, IntWritable> topTenMap = new HashMap<>();
 
     public void reduce(IntWritable key, Iterable<Text> values, Context context)
             throws IOException, InterruptedException {
@@ -32,7 +32,7 @@ public class Reduce extends Reducer<IntWritable, Text, Text, LongWritable> {
             }
 
         }
-        List<Integer> list = new ArrayList<Integer>();
+        List<Integer> list = new ArrayList<>();
         for (Entry<String, IntWritable> entry : wordFrequencyMap.entrySet()) {
             list.add(entry.getValue().get());
         }
@@ -43,7 +43,7 @@ public class Reduce extends Reducer<IntWritable, Text, Text, LongWritable> {
 
         for (Entry<String, IntWritable> entry : wordFrequencyMap.entrySet()) {
             if (entry.getValue().get() >= cutoff) {
-                topTenMap.put(entry.getKey().toString(), entry.getValue());
+                topTenMap.put(entry.getKey(), entry.getValue());
             }
         }
 
